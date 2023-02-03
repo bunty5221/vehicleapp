@@ -10,8 +10,10 @@ class SecondScreen extends StatefulWidget {
 
 class _SecondScreenState extends State<SecondScreen> {
   final firestore = FirebaseFirestore.instance.collection('vehicle');
+  List<String> dropdownOptions = ['Option 1', 'Option 2', 'Option 3'];
 
-  var selectedBrand, selectedFuel, selectedVehicle;
+  var selectedBrand, selectedFuel, selectedVehicle,selectedDrop;
+
   final GlobalKey<FormState> _formKeyValue = new GlobalKey<FormState>();
   TextEditingController VehicleNumber = TextEditingController();
   List<String> _BrandName = <String>[
@@ -26,6 +28,7 @@ class _SecondScreenState extends State<SecondScreen> {
     'Petrol',
     'Diesel',
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +54,7 @@ class _SecondScreenState extends State<SecondScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    child: DropdownButton(
+                    child: DropdownButtonFormField(
                       borderRadius: BorderRadius.circular(10),
                       items: _BrandName.map((value) => DropdownMenuItem(
                             child: Text(
@@ -79,7 +82,7 @@ class _SecondScreenState extends State<SecondScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    child: DropdownButton(
+                    child: DropdownButtonFormField(
                       borderRadius: BorderRadius.circular(10),
                       items: _VehicleType.map((value) => DropdownMenuItem(
                             child: Text(
@@ -107,7 +110,7 @@ class _SecondScreenState extends State<SecondScreen> {
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Container(
-                    child: DropdownButton(
+                    child: DropdownButtonFormField(
                       borderRadius: BorderRadius.circular(10),
                       items: _FuelType.map((value) => DropdownMenuItem(
                             child: Text(
@@ -132,28 +135,33 @@ class _SecondScreenState extends State<SecondScreen> {
                     ),
                   ),
                 ),
+
                 SizedBox(
                   height: 20,
                 ),
                 ElevatedButton(
                     onPressed: () {
-                      String id =
-                          DateTime.now().microsecondsSinceEpoch.toString();
+                      if(_formKeyValue.currentState!.validate()
+                      ){
 
-                      firestore
-                          .doc(id)
-                          .set({
-                            'id': id,
-                            'brand': selectedBrand.toString(),
-                            'fueltype': selectedFuel.toString(),
-                            'number': VehicleNumber.text.toString(),
-                            'vehicletype': selectedVehicle.toString(),
-                          })
-                          .then((value) => {
-                                Navigator.pop(context),
-                                debugPrint("succesful"),
-                              })
-                          .onError((error, stackTrace) => {});
+                        String id =
+                        DateTime.now().microsecondsSinceEpoch.toString();
+
+                        firestore
+                            .doc(id)
+                            .set({
+                          'id': id,
+                          'brand': selectedBrand.toString(),
+                          'fueltype': selectedFuel.toString(),
+                          'number': VehicleNumber.text.toString(),
+                          'vehicletype': selectedVehicle.toString(),
+                        })
+                            .then((value) => {
+                          Navigator.pop(context),
+                          debugPrint("succesful"),
+                        })
+                            .onError((error, stackTrace) => {});
+                      }
                     },
                     child: Text(
                       "submit",
